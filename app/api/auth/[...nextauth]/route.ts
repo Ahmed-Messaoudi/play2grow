@@ -12,7 +12,7 @@ export const authOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   pages: {
     home: "/",
-    signIn: "/login",
+    signIn: "/login",                 
   },
 };
 
