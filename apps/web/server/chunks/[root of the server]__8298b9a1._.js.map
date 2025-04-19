@@ -1,0 +1,9 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 6, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"","debugId":null}},
+    {"offset": {"line": 6, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"A"}},
+    {"offset": {"line": 140, "column": 0}, "map": {"version":3,"sources":["file://C%3A/Users/user/play2grow/app/api/auth/%5B...nextauth%5D/route.ts"],"sourcesContent":["import NextAuth from \"next-auth\";\r\nimport KeycloakProvider from \"next-auth/providers/keycloak\";\r\n\r\nexport const authOptions = {\r\n  providers: [\r\n    KeycloakProvider({\r\n      clientId: process.env.KEYCLOAK_CLIENT_ID!,\r\n      clientSecret: process.env.KEYCLOAK_CLIENT_SECRET!,\r\n      issuer: process.env.KEYCLOAK_ISSUER!,\r\n    }),\r\n  ],\r\n  secret: process.env.NEXTAUTH_SECRET,\r\n  pages: {\r\n    home: \"/\",\r\n    signIn: \"/login\",                 \r\n  },\r\n};\r\n\r\nconst handler = NextAuth(authOptions);\r\nexport { handler as GET, handler as POST };\r\n"],"names":[],"mappings":";;;;;AAAA;AACA;;;AAEO,MAAM,cAAc;IACzB,WAAW;QACT,CAAA,GAAA,uJAAA,CAAA,UAAgB,AAAD,EAAE;YACf,UAAU,QAAQ,GAAG,CAAC,kBAAkB;YACxC,cAAc,QAAQ,GAAG,CAAC,sBAAsB;YAChD,QAAQ,QAAQ,GAAG,CAAC,eAAe;QACrC;KACD;IACD,QAAQ,QAAQ,GAAG,CAAC,eAAe;IACnC,OAAO;QACL,MAAM;QACN,QAAQ;IACV;AACF;AAEA,MAAM,UAAU,CAAA,GAAA,uIAAA,CAAA,UAAQ,AAAD,EAAE","debugId":null}},
+    {"offset": {"line": 165, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"A"}}]
+}

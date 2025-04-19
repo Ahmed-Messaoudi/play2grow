@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 7, "column": 0}, "map": {"version":3,"sources":["file://C%3A/Users/user/play2grow/app/login/page.tsx"],"sourcesContent":["\"use client\";\r\nimport { signIn } from \"next-auth/react\";\r\n\r\nexport default function LoginPage() {\r\n  return (\r\n    <div className=\"flex flex-col items-center justify-center h-screen bg-gray-100\">\r\n      <h1 className=\"text-2xl font-bold mb-4\">Login</h1>\r\n      <button \r\n        className=\"bg-blue-500 text-white px-4 py-2 rounded\"\r\n        onClick={() => signIn(\"keycloak\")}\r\n      >\r\n        Login with Keycloak\r\n      </button>\r\n    </div>\r\n  );\r\n}\r\n"],"names":[],"mappings":";;;;AACA;AADA;;;AAGe,SAAS;IACtB,qBACE,8OAAC;QAAI,WAAU;;0BACb,8OAAC;gBAAG,WAAU;0BAA0B;;;;;;0BACxC,8OAAC;gBACC,WAAU;gBACV,SAAS,IAAM,CAAA,GAAA,8IAAA,CAAA,SAAM,AAAD,EAAE;0BACvB;;;;;;;;;;;;AAKP","debugId":null}},
+    {"offset": {"line": 43, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"A"}}]
+}

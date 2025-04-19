@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 7, "column": 0}, "map": {"version":3,"sources":["file://C%3A/Users/user/play2grow/app/signup/page.tsx"],"sourcesContent":["\"use client\";\r\n\r\nexport default function SignUpPage() {\r\n  return (\r\n    <div className=\"flex flex-col items-center justify-center h-screen bg-gray-100\">\r\n      <h1 className=\"text-2xl font-bold mb-4\">Sign Up</h1>\r\n      <button\r\n        className=\"bg-green-500 text-white px-4 py-2 rounded\"\r\n        onClick={() => window.location.href = \"http://localhost:8080/realms/play2grow/protocol/openid-connect/registrations?client_id=next&response_type=code\"}\r\n      >\r\n        Sign Up with Keycloak\r\n      </button>\r\n    </div>\r\n  );\r\n}\r\n"],"names":[],"mappings":";;;;AAAA;;AAEe,SAAS;IACtB,qBACE,6LAAC;QAAI,WAAU;;0BACb,6LAAC;gBAAG,WAAU;0BAA0B;;;;;;0BACxC,6LAAC;gBACC,WAAU;gBACV,SAAS,IAAM,OAAO,QAAQ,CAAC,IAAI,GAAG;0BACvC;;;;;;;;;;;;AAKP;KAZwB","debugId":null}},
+    {"offset": {"line": 47, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"A"}}]
+}
