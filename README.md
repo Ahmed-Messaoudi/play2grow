@@ -31,3 +31,5 @@ npm run start
 
 ## 📄 License
 This project is licensed under the MIT License.
+
+![Logo](/apps/web/public/2-removebg-preview%20(1).png)
