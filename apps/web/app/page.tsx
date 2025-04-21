@@ -2,6 +2,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
+import logo from '@/public/logo.png'
 
 export default function Home() {
   const [user, setUser] = useState<{ username: string } | null>(null);
@@ -33,7 +35,8 @@ export default function Home() {
   if (loading) return <p>Loading...</p>;
 
   return (
-    <main style={{ padding: '2rem' }}>
+    <main style={{ padding: '2rem' }}
+    className='bg-white text-black width-screen h-screen flex flex-col items-center justify-center'>
       {user ? (
         <>
           <h1>Welcome, {user.username} 👋</h1>
@@ -41,8 +44,18 @@ export default function Home() {
         </>
       ) : (
         <>
+          <div className='flex items-center justify-center'>
+            <Image
+          src={logo}
+          alt="Logo"
+          className='mt-[5px] mb-[80px]'></Image>
+          </div>
+          <div className='flex flex-col items-center justify-center gap-4'>
+          <h1 className='font-bold text-[60px]'>Welcome to Play2Grow</h1>
+          <p className='font-semibold text-blue-950'>Play2Grow is a platform designed to enhance your cognitive skills through engaging games and activities.</p>
           <h1>You are not logged in</h1>
-          <button onClick={handleLogin}>Login with Keycloak</button>
+          <button onClick={handleLogin} className='bg-green-600 w-[230px] h-[50px] hover:bg-blue-700 rounded-[10px]'>Login with Keycloak</button>
+          </div>
         </>
       )}
     </main>
