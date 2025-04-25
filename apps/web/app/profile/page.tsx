@@ -1,81 +1,64 @@
 'use client';
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 
-export default function ProfilePage() {
-  const [username, setUsername] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
+import { useEffect, useState } from 'react';
+
+export default function Profile() {
+  const [user, setUser] = useState<{ username: string, email?: string } | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [email, setEmail] = useState('');
 
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const res = await fetch('http://localhost:4000/api/user', {
-          credentials: 'include',
-          headers: {
-            'Cache-Control': 'no-cache'
-          }
-        });
-
-        if (!res.ok) {
-          const errorData = await res.json();
-          throw new Error(errorData.message || 'Authentication failed');
+    fetch('http://localhost:4000/api/user', {
+      credentials: 'include',
+    })
+      .then(async (res) => {
+        if (res.ok) {
+          const data = await res.json();
+          setUser(data);
+          setEmail(data.email || '');
+        } else {
+          setUser(null);
         }
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
-        const data = await res.json();
-        setUsername(data.username);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Unknown error');
-        console.error('Auth error:', err);
-        router.push('/');
-      }
-    };
-
-    fetchUser();
-  }, [router]);
-
-  const handleLogout = async () => {
-    try {
-      await fetch('http://localhost:4000/api/logout', {
-        credentials: 'include'
-      });
-      router.push('/');
-    } catch (err) {
-      console.error('Logout failed:', err);
-    }
+  const handleProfileUpdate = async () => {
+    await fetch('http://localhost:4000/api/profile/update', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ username: user?.username || '', email }),
+    });
   };
 
-  if (error) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen">
-        <p className="text-red-500 mb-4">{error}</p>
-        <button
-          onClick={() => router.push('/')}
-          className="bg-blue-500 text-white px-4 py-2 rounded"
-        >
-          Go to Login
-        </button>
-      </div>
-    );
-  }
+  if (loading) return <p>Loading...</p>;
 
-  if (!username) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p>Loading...</p>
-      </div>
-    );
+  if (!user) {
+    return <p>Please log in to view your profile.</p>;
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-6">
-      <h1 className="text-3xl font-bold mb-4">Welcome, {username} 🎉</h1>
+    <main className="p-10 flex flex-col gap-4">
+      <h1 className="text-3xl font-bold">Profile</h1>
+      <p><strong>Username:</strong> {user.username}</p>
+
+      <label className="flex flex-col">
+        <span>Email</span>
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="border border-gray-300 p-2 rounded-md"
+        />
+      </label>
+
       <button
-        onClick={handleLogout}
-        className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+        onClick={handleProfileUpdate}
+        className="bg-blue-600 hover:bg-blue-800 text-white py-2 px-4 rounded-md w-fit"
       >
-        Logout
+        Update Profile
       </button>
-    </div>
+    </main>
   );
 }
