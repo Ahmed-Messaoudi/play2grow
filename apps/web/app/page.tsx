@@ -36,10 +36,21 @@ export default function Home() {
 
   return (
     <main style={{ padding: '2rem' }}
-    className='bg-white text-black width-screen h-screen flex flex-col items-center justify-center'>
+    className={`w-screen h-screen flex flex-col items-center justify-center ${
+    user ? 'bg-purple-500' : 'bg-white'
+  } text-black`}>
       {user ? (
         <>
-          <h1>Welcome, {user.username} 👋</h1>
+          <h1>
+  Welcome,{' '}
+  <span
+    onClick={() => window.location.href = '/profile'}
+    className="text-blue-800 underline cursor-pointer hover:text-blue-600"
+  >
+    {user.username}
+  </span>{' '}
+  👋
+</h1>
           <button onClick={handleLogout}>Logout</button>
         </>
       ) : (
