@@ -8,8 +8,9 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  createdAt DateTime @default(now())
+  id          Int    @id @default(autoincrement())
+  keycloakId  String? @unique
+  username    String?
+  email       String?
+  // Add more fields if needed (e.g., profile picture, role)
 }
