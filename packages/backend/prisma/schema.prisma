@@ -12,6 +12,8 @@ model User {
   keycloakId  String   @unique
   email       String   @unique
   name        String
+  firstName   String?  // optional now
+  lastName    String?  // optional now
   role        Role
   createdAt   DateTime @default(now())
 }
