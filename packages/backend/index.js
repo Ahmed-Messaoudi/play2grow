@@ -49,7 +49,18 @@ app.get("/callback", async (req, res) => {
     headers: { Authorization: `Bearer ${access_token}` }
   });
 
-  const { sub: keycloakId, email, name } = userInfoRes.data;
+  const {
+    sub: keycloakId,
+    email,
+    given_name: firstName,
+    family_name: lastName,
+    name,
+  } = userInfoRes.data;
+
+  // Fallback: If Keycloak doesn't return firstName/lastName directly
+  const [fallbackFirst, fallbackLast] = (name || "").split(" ");
+  const finalFirstName = firstName || fallbackFirst || "";
+  const finalLastName = lastName || fallbackLast || "";
 
   // Sync user in DB
   let user = await prisma.user.findUnique({ where: { keycloakId } });
@@ -58,11 +69,14 @@ app.get("/callback", async (req, res) => {
       data: {
         keycloakId,
         email,
-        name,
-        role: "parent", // default, can update later
-      }
+        firstName: finalFirstName,
+        lastName: finalLastName,
+        role: "parent", // or derive from Keycloak roles
+      },
     });
   }
+  console.log("Keycloak user info:", userInfoRes.data);
+
 
   req.session.user = user;
   res.redirect("http://localhost:3000/profile");
@@ -74,11 +88,66 @@ app.get("/me", (req, res) => {
   res.json(req.session.user);
 });
 
+
+app.put("/me", async (req, res) => {
+  const sessionUser = req.session.user;
+  if (!sessionUser) return res.status(401).json({ message: "Not authenticated" });
+
+  const { firstName, lastName, email } = req.body;
+
+  try {
+    // Get admin token from Keycloak
+    const tokenRes = await axios.post(
+      "http://localhost:8080/realms/master/protocol/openid-connect/token",
+      new URLSearchParams({
+        grant_type: "password",
+        client_id: "admin-cli",
+        username: "admin",
+        password: "admin", // replace with actual credentials
+      }),
+      { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
+    );
+
+    const adminToken = tokenRes.data.access_token;
+
+    // Update user in Keycloak
+    await axios.put(
+      `http://localhost:8080/admin/realms/play2grow/users/${sessionUser.keycloakId}`,
+      {
+        firstName,
+        lastName,
+        email
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${adminToken}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    // Update user in DB
+    const updatedUser = await prisma.user.update({
+      where: { keycloakId: sessionUser.keycloakId },
+      data: { firstName, lastName, email },
+    });
+
+    req.session.user = updatedUser; // update session
+    res.json(updatedUser);
+  } catch (err) {
+    console.error("Failed to update user:", err);
+    res.status(500).json({ message: "Update failed" });
+  }
+});
+
+
+
+
 // Logout
 app.get("/logout", (req, res) => {
   req.session.destroy(() => {
     res.redirect(`${KEYCLOAK_BASE}/logout?redirect_uri=http://localhost:3000`);
-    
+
   });
 });
 
