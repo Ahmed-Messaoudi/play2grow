@@ -142,6 +142,34 @@ app.put("/me", async (req, res) => {
 
 
 
+app.get("/quizzes/:id", async (req, res) => {
+  const quizId = parseInt(req.params.id);
+
+  try {
+    const quiz = await prisma.quiz.findUnique({
+      where: { id: quizId },
+      include: {
+        questions: {
+          include: {
+            options: true,
+          },
+        },
+      },
+    });
+
+    if (!quiz) {
+      return res.status(404).json({ message: "Quiz not found" });
+    }
+
+    res.json(quiz);
+  } catch (err) {
+    console.error("Failed to fetch quiz:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+
+
 
 // Logout
 app.get("/logout", (req, res) => {
