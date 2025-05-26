@@ -8,20 +8,21 @@ datasource db {
 }
 
 model User {
-  id          String   @id @default(cuid())
-  keycloakId  String   @unique
-  email       String   @unique
-  firstName   String?
-  lastName    String?
-  role        Role
-  createdAt   DateTime @default(now())
+  id         String   @id @default(cuid())
+  keycloakId String   @unique
+  email      String   @unique
+  firstName  String?
+  lastName   String?
+  role       Role
+  createdAt  DateTime @default(now())
+
+  notifications Notification[] // 👈 Add this line if not already there
 }
 
 enum Role {
   parent
   child
 }
-
 
 model Quiz {
   id        Int        @id @default(autoincrement())
@@ -32,19 +33,19 @@ model Quiz {
 }
 
 model Question {
-  id        Int         @id @default(autoincrement())
+  id        Int          @id @default(autoincrement())
   quizId    Int
-  quiz      Quiz        @relation(fields: [quizId], references: [id])
+  quiz      Quiz         @relation(fields: [quizId], references: [id])
   text      String
   type      QuestionType
   options   Option[]
-  createdAt DateTime    @default(now())
+  createdAt DateTime     @default(now())
 }
 
 model Option {
-  id         Int       @id @default(autoincrement())
+  id         Int      @id @default(autoincrement())
   questionId Int
-  question   Question  @relation(fields: [questionId], references: [id])
+  question   Question @relation(fields: [questionId], references: [id])
   text       String?
   imageUrl   String?
   isCorrect  Boolean
@@ -56,3 +57,11 @@ enum QuestionType {
   COLOR
 }
 
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
