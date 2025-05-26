@@ -8,6 +8,8 @@ import gameroom from "@/public/gameroom.jpg"
 import numbers from "@/public/numbers.jpg"
 import children from "@/public/children.jpg"
 
+
+
 interface User {
   name: string;
   // add more fields if needed
@@ -39,6 +41,7 @@ const Home = () => {
 
   return (
     <div className="container mx-auto flex items-center justify-center h-screen w-[1920px] bg-green-500">
+      
       {!user ? (
         <button onClick={handleLogin} className="px-4 py-2 bg-blue-500 text-white rounded">
           Login
