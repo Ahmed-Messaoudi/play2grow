@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import ProfileCard from "@/components/profilecard";
+import NotificationCenter from "@/components/NotificationCenter";
 
 const Profile = () => {
   const router = useRouter();
@@ -48,6 +49,7 @@ const Profile = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      {user && <NotificationCenter />}
       {!editing ? (
         <>
           {user && <ProfileCard user={user} />}
