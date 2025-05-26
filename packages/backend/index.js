@@ -4,6 +4,7 @@ const axios = require("axios");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const { PrismaClient } = require("@prisma/client");
+const { sendEmail } = require("./mail");
 
 dotenv.config();
 const app = express();
@@ -22,6 +23,7 @@ const KEYCLOAK_BASE = "http://localhost:8080/realms/play2grow/protocol/openid-co
 const CLIENT_ID = "next";
 const CLIENT_SECRET = process.env.KEYCLOAK_SECRET;
 const REDIRECT_URI = "http://localhost:3001/callback";
+
 
 // STEP 1: Redirect to Keycloak
 app.get("/login", (req, res) => {
@@ -167,6 +169,110 @@ app.get("/quizzes/:id", async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
+
+
+
+// POST /notifications
+app.post("/notifications", async (req, res) => {
+  const { userId, message } = req.body;
+
+  try {
+    const notification = await prisma.notification.create({
+      data: {
+        userId,
+        message,
+      },
+    });
+    res.json(notification);
+  } catch (error) {
+    console.error("Error creating notification:", error);
+    res.status(500).json({ error: "Failed to create notification" });
+  }
+});
+
+
+// GET /notifications
+app.get("/notifications", async (req, res) => {
+  const sessionUser = req.session.user;
+  if (!sessionUser) return res.status(401).json({ message: "Not authenticated" });
+
+  const notifications = await prisma.notification.findMany({
+    where: { userId: sessionUser.id },
+    orderBy: { createdAt: "desc" },
+  });
+
+  res.json(notifications);
+});
+
+
+
+// PUT /notifications/:id/read
+app.put("/notifications/:id/read", async (req, res) => {
+  const { id } = req.params;
+
+  const updated = await prisma.notification.update({
+    where: { id: parseInt(id) },
+    data: { isRead: true },
+  });
+
+  res.json(updated);
+});
+
+app.post("/notifications/test", async (req, res) => {
+  const user = req.session.user;
+  if (!user) {
+    return res.status(401).send("Not logged in");
+  }
+
+  try {
+    const notification = await prisma.notification.create({
+      data: {
+        userId: user.id,
+        message: "🎉 This is a test notification!",
+        isRead: false,
+      },
+    });
+
+    // ✅ Send email
+    await sendEmail(
+      user.email,
+      "🎉 New Notification from Play2Grow",
+      "You just received a new notification in your account.tasnim or any receiver of this email please DO NOT REPLY to this email as it is not monitored."
+    );
+
+    res.json(notification);
+  } catch (error) {
+    console.error("Failed to create test notification", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+
+app.get("/notifications/test", async (req, res) => {
+  const user = req.session.user;
+
+  if (!user) {
+    return res.status(401).json({ message: "Not authenticated" });
+  }
+
+  console.log("🔔 /notifications/test triggered for", user.email); // 👈 Add this
+  try {
+    console.log("📧 Preparing to send email to:", user.email); // 👈 Add this too
+    await sendEmail(
+      user.email,
+      "🎉 New Notification from Play2Grow",
+      "You just received a new notification in your account Tasnim or any receiver of this email please DO NOT REPLY to this email as it is not monitored."
+    );
+    res.status(200).json({ message: "Notification triggered" });
+  } catch (error) {
+    console.error("❌ Error sending email:", error);
+    res.status(500).json({ message: "Failed to send notification" });
+  }
+});
+
+
+
+
 
 
 
