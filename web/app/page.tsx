@@ -7,6 +7,11 @@ import Image from "next/image";
 import gameroom from "@/public/gameroom.jpg"
 import numbers from "@/public/numbers.jpg"
 import children from "@/public/children.jpg"
+import { div } from "framer-motion/client";
+import logo from "@/public/logo.png";
+import music from "@/public/music.png";
+import settings from "@/public/settings.png";
+import play from "@/public/play.png";
 
 
 
@@ -40,12 +45,30 @@ const Home = () => {
   ;
 
   return (
-    <div className="container mx-auto flex items-center justify-center h-screen w-[1920px] bg-green-500">
+    <div className=" mt-[20px] container mx-auto flex items-center justify-center h-[660px] w-[1920px] rounded-[30px] "
+    style = {{backgroundImage : "url('/home.png')", backgroundSize: "cover"}}>
       
       {!user ? (
-        <button onClick={handleLogin} className="px-4 py-2 bg-blue-500 text-white rounded">
-          Login
+        <section>
+          <div className="flex flex-col gap-23 w-[1000px] h-[500px]">
+            <div className="ml-[350px]">
+              <Image alt="logo" src={logo} ></Image>
+            </div>
+            <div className="flex items-center justify-center ">
+        <button onClick={handleLogin} className="px-4 py-2 rounded">
+          <Image alt="play" src={play}></Image>
         </button>
+        </div>
+        <div className="flex flex-row ">
+          <div className="">
+          <Image alt="music" src={music}></Image>
+          </div>
+          <div className="ml-[900px]">
+              <Image alt="settings" src={settings}></Image>
+            </div>
+        </div>
+        </div>
+        </section>
       ) : (
         <section className="flex flex-col items-center bg-green-500 rounded-[50px] ">
           <div className="flex flex-row items-center justify-between w-full p-4 bg-gray-200">
