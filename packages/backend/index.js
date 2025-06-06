@@ -255,9 +255,9 @@ app.get("/notifications/test", async (req, res) => {
     return res.status(401).json({ message: "Not authenticated" });
   }
 
-  console.log("🔔 /notifications/test triggered for", user.email); // 👈 Add this
+  console.log("🔔 /notifications/test triggered for", user.email);
   try {
-    console.log("📧 Preparing to send email to:", user.email); // 👈 Add this too
+    console.log("📧 Preparing to send email to:", user.email);
     await sendEmail(
       user.email,
       "🎉 New Notification from Play2Grow",
