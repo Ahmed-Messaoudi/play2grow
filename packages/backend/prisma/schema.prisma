@@ -16,12 +16,22 @@ model User {
   role       Role
   createdAt  DateTime @default(now())
 
+
+  children   Child[]
   notifications Notification[] // 👈 Add this line if not already there
+}
+
+model Child {
+  id        Int      @id @default(autoincrement())
+  name      String
+  age       Int
+  parentId  String
+  parent    User     @relation(fields: [parentId], references: [id])
+  createdAt DateTime @default(now())
 }
 
 enum Role {
   parent
-  child
 }
 
 model Quiz {
