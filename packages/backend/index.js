@@ -143,6 +143,52 @@ app.put("/me", async (req, res) => {
 });
 
 
+app.post('/api/children', async (req, res) => {
+  const { name, email } = req.body;
+  const parentId = req.session.user?.id; // assuming user is stored in session
+
+  if (!parentId) return res.status(401).json({ error: 'Unauthorized' });
+
+  try {
+    const child = await prisma.user.create({
+      data: {
+        email,
+        firstName: name,
+        role: 'child',
+        parent: { connect: { id: parentId } },
+        keycloakId: `child-${Date.now()}-${Math.random()}`, // fake ID, not used for login
+      },
+    });
+    res.status(201).json(child);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to create child' });
+  }
+});
+
+
+app.get('/api/children', async (req, res) => {
+  const parentId = req.session.user?.id;
+
+  if (!parentId) return res.status(401).json({ error: 'Unauthorized' });
+
+  try {
+    const children = await prisma.user.findMany({
+      where: {
+        parentId: parentId,
+        role: 'child',
+      },
+    });
+
+    res.json(children);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch children' });
+  }
+});
+
+
+
 
 app.get("/quizzes/:id", async (req, res) => {
   const quizId = parseInt(req.params.id);
