@@ -15,6 +15,7 @@ model User {
   lastName   String?
   role       Role
   createdAt  DateTime @default(now())
+  dashboardPasscode String?   // <- NEW!
 
   // New relation fields
   parentId String? // 👈 A child will have this set
