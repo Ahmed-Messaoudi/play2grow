@@ -5,6 +5,8 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const { PrismaClient, Role } = require('@prisma/client');
 const { sendEmail } = require("./mail");
+const requireDashboardPasscode = require("./middlewares/requireDashboardPasscode");
+
 
 dotenv.config();
 const app = express();
@@ -206,6 +208,173 @@ app.get('/api/children', async (req, res) => {
     res.status(500).json([]);
   }
 });
+
+
+app.post("/api/progress", async (req, res) => {
+  const sessionUser = req.session.user;
+  if (!sessionUser) return res.status(401).json({ message: "Not authenticated" });
+
+  const { childId, quizId, score } = req.body;
+
+  try {
+    // Check if this child belongs to the logged-in parent
+    const child = await prisma.user.findUnique({ where: { id: childId } });
+
+    if (!child || child.parentId !== sessionUser.id) {
+      return res.status(403).json({ message: "Unauthorized to update this child's progress" });
+    }
+
+    const progress = await prisma.progress.create({
+      data: {
+        childId,
+        quizId,
+        score,
+      },
+    });
+
+    res.status(201).json(progress);
+  } catch (err) {
+    console.error("Error saving progress:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+
+
+app.get("/api/progress/:childId", async (req, res) => {
+  const sessionUser = req.session.user;
+  const childId = parseInt(req.params.childId);
+
+  if (!sessionUser) return res.status(401).json({ message: "Not authenticated" });
+
+  try {
+    // Check if this child belongs to the logged-in parent
+    const child = await prisma.user.findUnique({ where: { id: childId } });
+
+    if (!child || child.parentId !== sessionUser.id) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    const progress = await prisma.progress.findMany({
+      where: { childId },
+      include: {
+        quiz: true,
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    res.json(progress);
+  } catch (err) {
+    console.error("Error fetching progress:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+
+
+app.get("/api/dashboard", requireDashboardPasscode, async (req, res) => {
+  const parentId = req.session.user.id;
+
+  try {
+    const children = await prisma.user.findMany({
+      where: { parentId, role: "child" },
+      include: {
+        progress: {
+          include: { quiz: true },
+          orderBy: { createdAt: "desc" }
+        }
+      }
+    });
+
+    res.json({ children });
+  } catch (err) {
+    console.error("Dashboard error:", err);
+    res.status(500).json({ message: "Failed to load dashboard" });
+  }
+});
+
+
+app.post("/api/set-passcode", async (req, res) => {
+  const user = req.session.user;
+  const { passcode } = req.body;
+
+  if (!user || user.role !== "parent") {
+    return res.status(403).json({ message: "Only parents can set a passcode" });
+  }
+
+  try {
+    const updated = await prisma.user.update({
+      where: { id: user.id },
+      data: { dashboardPasscode: passcode },
+    });
+
+    // Update session with new passcode
+    req.session.user = updated;
+
+    res.json({ message: "Passcode updated" });
+  } catch (err) {
+    console.error("Error setting passcode:", err);
+    res.status(500).json({ message: "Failed to update passcode" });
+  }
+});
+
+
+app.get("/api/dashboard/home", requireDashboardPasscode, async (req, res) => {
+  const parentId = req.session.user.id;
+
+  try {
+    const children = await prisma.user.findMany({
+      where: { parentId, role: "child" },
+      include: { progress: true },
+    });
+
+    const totalProgress = children.reduce((acc, child) => acc + child.progress.length, 0);
+
+    res.json({
+      parentName: req.session.user.firstName,
+      childrenCount: children.length,
+      totalProgress,
+    });
+  } catch (err) {
+    console.error("Dashboard home error:", err);
+    res.status(500).json({ message: "Failed to load dashboard data" });
+  }
+});
+
+
+app.get("/api/dashboard/children", requireDashboardPasscode, async (req, res) => {
+  const parentId = req.session.user.id;
+
+  const children = await prisma.user.findMany({
+    where: { parentId, role: "child" },
+    select: { id: true, firstName: true, lastName: true }
+  });
+
+  res.json(children);
+});
+
+
+
+app.get("/api/dashboard/progress", requireDashboardPasscode, async (req, res) => {
+  const parentId = req.session.user.id;
+
+  const children = await prisma.user.findMany({
+    where: { parentId, role: "child" },
+    include: {
+      progress: {
+        include: { quiz: true },
+        orderBy: { createdAt: "desc" }
+      }
+    }
+  });
+
+  res.json(children);
+});
+
+
+
+
+
 
 
 
