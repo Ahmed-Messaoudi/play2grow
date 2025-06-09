@@ -16,9 +16,14 @@ model User {
   role       Role
   createdAt  DateTime @default(now())
 
+  // New relation fields
+  parentId String? // 👈 A child will have this set
+  parent   User?      @relation("ParentChild", fields: [parentId], references: [id])
+  children User[]     @relation("ParentChild") // 👈 A parent will have multiple children
+  progress Progress[] @relation("UserProgress") // 👈 Child → Progress
 
-  children   Child[]
-  notifications Notification[] // 👈 Add this line if not already there
+  notifications Notification[]
+  Child         Child[]
 }
 
 model Child {
@@ -32,6 +37,20 @@ model Child {
 
 enum Role {
   parent
+  child
+}
+
+model Progress {
+  id      Int    @id @default(autoincrement())
+  childId String // 👈 Must match `User.id` type (String or Int)
+  child   User   @relation("UserProgress", fields: [childId], references: [id])
+
+  level     Int
+  score     Int
+  completed Boolean  @default(false)
+  gameType  String
+  timeTaken Int
+  createdAt DateTime @default(now())
 }
 
 model Quiz {
