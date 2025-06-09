@@ -34,6 +34,18 @@ const Home = () => {
       });
   }, []);
 
+
+  const handleAccessDashboard = () => {
+    const storedPasscode = localStorage.getItem('dashboardPasscode')
+    const inputPasscode = prompt('Enter your dashboard passcode')
+
+    if (inputPasscode === storedPasscode) {
+      router.push('/dashboard/home')
+    } else {
+      alert('Incorrect passcode!')
+    }
+  }
+
   const handleLogin = () => {
     router.push("/login");
   };
@@ -46,8 +58,8 @@ const Home = () => {
 
   return (
     <div className=" mt-[20px] container mx-auto flex items-center justify-center h-[660px] w-[1920px] rounded-[30px] "
-    style = {{backgroundImage : "url('/home.png')", backgroundSize: "cover"}}>
-      
+      style={{ backgroundImage: "url('/home.png')", backgroundSize: "cover" }}>
+
       {!user ? (
         <section>
           <div className="flex flex-col gap-23 w-[1000px] h-[500px]">
@@ -55,27 +67,33 @@ const Home = () => {
               <Image alt="logo" src={logo} ></Image>
             </div>
             <div className="flex items-center justify-center ">
-        <button onClick={handleLogin} className="px-4 py-2 rounded">
-          <Image alt="play" src={play}></Image>
-        </button>
-        </div>
-        <div className="flex flex-row ">
-          <div className="">
-          <Image alt="music" src={music}></Image>
-          </div>
-          <div className="ml-[900px]">
-              <Image alt="settings" src={settings}></Image>
+              <button onClick={handleLogin} className="px-4 py-2 rounded">
+                <Image alt="play" src={play}></Image>
+              </button>
             </div>
-        </div>
-        </div>
+            <div className="flex flex-row ">
+              <div className="">
+                <Image alt="music" src={music}></Image>
+              </div>
+              <div className="ml-[900px]">
+                <Image alt="settings" src={settings}></Image>
+              </div>
+            </div>
+          </div>
         </section>
       ) : (
         <section className="flex flex-col items-center bg-green-500 rounded-[50px] ">
           <div className="flex flex-row items-center justify-between w-full p-4 bg-gray-200">
-          <a href="/profile"><h1 className=" text-2xl font-bold text-black">Welcome, {user.name}</h1></a>
-          <button onClick={handleLogout} className="px-4 py-2 bg-red-500 text-white rounded">
-            Logout
-          </button>
+            <a href="/profile"><h1 className=" text-2xl font-bold text-black">Welcome, {user.name}</h1></a>
+            <button
+              onClick={handleAccessDashboard}
+              className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow hover:bg-blue-700 transition duration-200"
+            >
+              Go to Dashboard
+            </button>
+            <button onClick={handleLogout} className="px-4 py-2 bg-red-500 text-white rounded">
+              Logout
+            </button>
           </div>
           <div className=" flex flex-row w-auto h-[500px] bg-purple-500">
             <div className="flex flex-col ml-[20px] mt-[30px] w-[300px] h-[400px] bg-white rounded-[20px]">
