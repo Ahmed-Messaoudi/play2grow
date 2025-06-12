@@ -11,6 +11,11 @@ export default function QuizPage() {
   const [selectedAnswers, setSelectedAnswers] = useState<{ [key: number]: number }>({});
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState<number | null>(null);
+  const [childId, setChildId] = useState<string | null>(null);
+  const [startTime, setStartTime] = useState<number | null>(null);
+  const [elapsedTime, setElapsedTime] = useState<number>(0);
+
+
 
   useEffect(() => {
     const fetchQuiz = async () => {
@@ -19,15 +24,35 @@ export default function QuizPage() {
       setQuiz(data);
       setLoading(false);
     };
+
+    const storedChildId = localStorage.getItem("childId");
+    if (storedChildId) {
+      setChildId(storedChildId);
+    } else {
+      // Redirect to /select-child if no childId
+      window.location.href = "/select-child";
+      return;
+    }
+
     if (id) fetchQuiz();
+
+    const start = Date.now();
+    setStartTime(start);
+
+    const interval = setInterval(() => {
+      setElapsedTime(Math.floor((Date.now() - start) / 1000));
+    }, 1000);
+
+    return () => clearInterval(interval);
   }, [id]);
+
 
   const handleSelect = (questionId: number, optionId: number) => {
     if (submitted) return;
     setSelectedAnswers({ ...selectedAnswers, [questionId]: optionId });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     let s = 0;
     quiz.questions.forEach((q: any) => {
       const correct = q.options.find((opt: any) => opt.isCorrect);
@@ -35,14 +60,46 @@ export default function QuizPage() {
     });
     setScore(s);
     setSubmitted(true);
+
+    if (childId) {
+      try {
+        const res = await fetch("http://localhost:3001/api/progress", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            childId,
+            level: parseInt(id as string),         // assuming quizId = level number
+            score: s,
+            completed: true,
+            gameType: "quiz",
+            timeTaken: elapsedTime,
+          }),
+          credentials: "include",
+        });
+
+        if (!res.ok) {
+          console.error("❌ Failed to send progress");
+        }
+      } catch (error) {
+        console.error("❌ Error sending progress:", error);
+      }
+    } else {
+      console.warn("No child ID found in localStorage");
+    }
   };
+
 
   if (loading) return <p className="text-center mt-10">⏳ Loading quiz...</p>;
   if (!quiz) return <p>Quiz not found.</p>;
 
   return (
     <div className="p-4 mx-auto w-screen h-screen flex flex-col items-center justify-center bg-cover"
-    style = {{backgroundImage : "url('/bg-lvl1.png')", backgroundSize: "cover"}}>
+      style={{ backgroundImage: "url('/bg-lvl1.png')", backgroundSize: "cover" }}>
+      <p className="text-white text-lg mb-4">
+        ⏱️ Time: {elapsedTime}s
+      </p>
       <h1 className="text-3xl font-bold text-white mb-6 text-center">
         {quiz.title}
       </h1>
