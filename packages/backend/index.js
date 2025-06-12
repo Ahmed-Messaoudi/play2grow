@@ -83,7 +83,7 @@ app.get("/callback", async (req, res) => {
 
 
   req.session.user = user;
-  res.redirect("http://localhost:3000/profile");
+  res.redirect("http://localhost:3000/select-child");
 });
 
 // Profile route
@@ -209,12 +209,81 @@ app.get('/api/children', async (req, res) => {
   }
 });
 
+app.put('/api/children/:id', async (req, res) => {
+  const parentId = req.session.user?.id;
+  const childId = parseInt(req.params.id, 10);
+  const { firstName, lastName, email, age } = req.body;
+
+  if (!parentId) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  try {
+    // Check that the child belongs to the parent
+    const child = await prisma.user.findUnique({
+      where: { id: childId },
+    });
+
+    if (!child || child.parentId !== parentId || child.role !== 'child') {
+      return res.status(403).json({ error: 'Forbidden' });
+    }
+
+    const updatedChild = await prisma.user.update({
+      where: { id: childId },
+      data: {
+        firstName,
+        lastName,
+        email,
+        age,
+      },
+    });
+
+    res.json(updatedChild);
+  } catch (err) {
+    console.error('Failed to update child:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
+app.delete('/api/children/:id', async (req, res) => {
+  const parentId = req.session.user?.id;
+  const childId = parseInt(req.params.id, 10);
+
+  if (!parentId) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  try {
+    // Check that the child belongs to the parent
+    const child = await prisma.user.findUnique({
+      where: { id: childId },
+    });
+
+    if (!child || child.parentId !== parentId || child.role !== 'child') {
+      return res.status(403).json({ error: 'Forbidden' });
+    }
+
+    await prisma.user.delete({
+      where: { id: childId },
+    });
+
+    res.status(204).end(); // No content
+  } catch (err) {
+    console.error('Failed to delete child:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
+
+
 
 app.post("/api/progress", async (req, res) => {
   const sessionUser = req.session.user;
   if (!sessionUser) return res.status(401).json({ message: "Not authenticated" });
 
-  const { childId, quizId, score } = req.body;
+  const { childId, quizId, score, level, gameType, timeTaken, createdAt } = req.body;
 
   try {
     // Check if this child belongs to the logged-in parent
@@ -229,6 +298,10 @@ app.post("/api/progress", async (req, res) => {
         childId,
         quizId,
         score,
+        level,
+        gameType,
+        timeTaken,
+        createdAt,
       },
     });
 
@@ -319,27 +392,41 @@ app.post("/api/set-passcode", async (req, res) => {
 });
 
 
-app.get("/api/dashboard/home", requireDashboardPasscode, async (req, res) => {
-  const parentId = req.session.user.id;
-
+app.get("/api/dashboard/home", async (req, res) => {
   try {
     const children = await prisma.user.findMany({
-      where: { parentId, role: "child" },
-      include: { progress: true },
+      where: { role: "child" },
+      include: {
+        progress: true,
+      },
     });
 
-    const totalProgress = children.reduce((acc, child) => acc + child.progress.length, 0);
+    const summary = children.map((child) => {
+      const totalQuizzes = child.progress.length;
+      const totalScore = child.progress.reduce((acc, p) => acc + p.score, 0);
+      const totalTime = child.progress.reduce((acc, p) => acc + p.timeTaken, 0);
+      const lastPlayed = child.progress
+        .map((p) => p.createdAt)
+        .sort()
+        .reverse()[0] ?? null;
 
-    res.json({
-      parentName: req.session.user.firstName,
-      childrenCount: children.length,
-      totalProgress,
+      return {
+        childId: child.id,
+        name: child.name,
+        totalQuizzes,
+        averageScore: totalQuizzes > 0 ? (totalScore / totalQuizzes).toFixed(2) : "0.00",
+        totalTime,
+        lastPlayed,
+      };
     });
-  } catch (err) {
-    console.error("Dashboard home error:", err);
-    res.status(500).json({ message: "Failed to load dashboard data" });
+
+    res.json(summary);
+  } catch (error) {
+    console.error("Error in /dashboard/home:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
+
 
 
 app.get("/api/dashboard/children", requireDashboardPasscode, async (req, res) => {
