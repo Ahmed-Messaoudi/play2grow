@@ -1,87 +1,42 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import ChildrenList from './components/ChildrenList';
+import AddChildModal from './components/AddChildModal';
 
 export default function ChildrenPage() {
-    type Child = { id: string | number; firstName: string; email: string };
-    const [children, setChildren] = useState<Child[]>([]);
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
+  const [children, setChildren] = useState([]);
+  const [showAddModal, setShowAddModal] = useState(false);
 
-    const fetchChildren = async () => {
-        const res = await fetch('http://localhost:3001/api/children', {
-            credentials: 'include',
-        });
-        const data = await res.json();
+  const fetchChildren = async () => {
+    const res = await fetch('http://localhost:3001/api/children', { credentials: 'include' });
+    const data = await res.json();
+    setChildren(data);
+  };
 
-        console.log('Children API response:', data); // 👈 Log this
+  useEffect(() => {
+    fetchChildren();
+  }, []);
 
-        setChildren(Array.isArray(data) ? data : []);
-    };
+  return (
+    <div className="p-6">
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold text-green-500">Childrens</h1>
+        <button
+          onClick={() => setShowAddModal(true)}
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+        >
+          Add Child
+        </button>
+      </div>
 
-    const createChild = async () => {
-        try {
-            const res = await fetch('http://localhost:3001/api/children', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-                body: JSON.stringify({ firstName: name, email }),
-            });
+      <ChildrenList children={children} refresh={fetchChildren} />
 
-            if (!res.ok) {
-                const errorData = await res.json();
-                alert(`Error: ${errorData.message || 'Failed to add child'}`);
-                return;
-            }
-
-            setName('');
-            setEmail('');
-            fetchChildren();
-        } catch (err) {
-            alert('Network error while creating child');
-            console.error(err);
-        }
-    };
-
-
-    useEffect(() => {
-        fetchChildren();
-    }, []);
-
-    return (
-        <div className="p-4">
-            <h1 className="text-xl font-bold mb-4">My Children</h1>
-
-            <div className="mb-4">
-                <input
-                    className="border p-2 mr-2"
-                    value={name}
-                    placeholder="Child Name"
-                    onChange={(e) => setName(e.target.value)}
-                />
-                <input
-                    className="border p-2 mr-2"
-                    value={email}
-                    placeholder="Child Email"
-                    onChange={(e) => setEmail(e.target.value)}
-                />
-                <button onClick={createChild} className="bg-blue-500 text-white px-4 py-2 rounded">
-                    Add Child
-                </button>
-            </div>
-
-            <ul>
-                {Array.isArray(children) && children.length > 0 ? (
-                    children.map((child) => (
-                        <li key={child.id} className="mb-2">
-                            👶 {child.firstName} ({child.email})
-                        </li>
-                    ))
-                ) : (
-                    <li>No children found.</li>
-                )}
-            </ul>
-
-        </div>
-    );
+      <AddChildModal
+        open={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onAdded={fetchChildren}
+      />
+    </div>
+  );
 }
