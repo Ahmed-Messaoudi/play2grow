@@ -1,18 +1,22 @@
 function requireDashboardPasscode(req, res, next) {
   const sessionUser = req.session.user;
-  const { passcode } = req.query; // Get passcode from the URL query (e.g., ?passcode=1234)
 
-  // Must be logged in
   if (!sessionUser || sessionUser.role !== "parent") {
-    return res.status(403).json({ message: "Access denied" });
+    return res.status(403).json({ message: "Unauthorized access" });
   }
 
-  // Check if the passcode matches the parent's stored passcode
-  if (sessionUser.dashboardPasscode !== passcode) {
+  const submittedPasscode = req.headers["x-dashboard-passcode"];
+
+  if (!submittedPasscode) {
+    return res.status(400).json({ message: "Dashboard passcode is required" });
+  }
+
+  if (submittedPasscode !== sessionUser.dashboardPasscode) {
     return res.status(401).json({ message: "Incorrect dashboard passcode" });
   }
+  console.log("Session user passcode:", sessionUser.dashboardPasscode);
+  console.log("Submitted passcode:", submittedPasscode);
 
-  // All good, continue to the next handler
   next();
 }
 
