@@ -3,6 +3,9 @@
   margin: 100px auto;
   padding: 20px;
   text-align: center;
+  background-color: #f7eaea;
+  border-radius: 20px;
+  box-shadow: #000000 0px 0px 0px 2px;
 }
 
 .kc-login-container input {
@@ -10,6 +13,29 @@
   margin: 10px auto;
   padding: 10px;
   width: 100%;
+}
+
+
+.logo {
+  display: block;
+  margin: 0 auto;
+  width: 360px;
+  height: auto;
+  margin-bottom: 20px;
+}
+
+body {
+  background-color: #000000;
+  font-family: Arial, sans-serif;
+}
+
+input[type="submit"] {
+  background-image: linear-gradient(to right, #304dc7, #5ad375);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 10px;
 }
 
 
