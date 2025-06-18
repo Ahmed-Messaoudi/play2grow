@@ -7,7 +7,7 @@ interface User {
 
 const ProfileCard = ({ user }: { user: User }) => {
   return (
-    <div className="flex flex-col md:flex-row items-center gap-6 p-6 bg-white rounded-xl shadow-md transition hover:shadow-lg">
+    <div className="flex flex-col md:flex-row items-center gap-6 p-6 bg-white rounded-[20px] border-[2px] shadow-md transition hover:shadow-lg">
       <div className="w-32 h-32 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 text-4xl font-bold">
         {user.firstName?.[0]?.toUpperCase() || "U"}
       </div>
