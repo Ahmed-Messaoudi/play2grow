@@ -412,7 +412,8 @@ app.get("/api/dashboard/home", async (req, res) => {
 
       return {
         childId: child.id,
-        name: child.name,
+        name: child.firstName,
+        email: child.email,
         totalQuizzes,
         averageScore: totalQuizzes > 0 ? (totalScore / totalQuizzes).toFixed(2) : "0.00",
         totalTime,
