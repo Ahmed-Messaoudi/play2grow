@@ -48,22 +48,25 @@ const Profile = () => {
   if (loading) return <div>Loading...</div>;
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      {user && <NotificationCenter />}
+    <div className="container mx-auto px-4 py-8 bg-white mt-[20px] rounded-[30px]"
+    style={{ backgroundImage: "url('/home.png')", backgroundSize: "cover" }}>
       {!editing ? (
         <>
           {user && <ProfileCard user={user} />}
           <div className="mt-6 flex justify-center">
             <button
               onClick={() => setEditing(true)}
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+              className="px-4 py-2 bg-[#a024acb0] text-white rounded hover:bg-blue-700 transition"
             >
               Edit Profile
             </button>
           </div>
+          <div className="mt-[50px]">
+          {user && <NotificationCenter />}
+          </div>
         </>
       ) : (
-        <div className="max-w-xl mx-auto bg-white p-6 rounded-xl shadow-md space-y-4">
+        <div className="max-w-xl mx-auto bg-white p-6 rounded-xl shadow-md space-y-4 text-black">
           <h2 className="text-xl font-semibold">Edit Profile</h2>
           <input
             className="w-full border px-3 py-2 rounded"
