@@ -1,136 +1,116 @@
-"use client";
+'use client';
 
-import { useState } from "react";
+import { useState } from 'react';
 
-const questions = [
+type Question = {
+  text: string;
+  options: { label: string; score: number }[];
+};
+
+const questions: Question[] = [
   {
     text: "How does your child respond to their name?",
     options: [
-      { text: "Immediately", score: 0 },
-      { text: "Sometimes", score: 1 },
-      { text: "Rarely or never", score: 3 },
+      { label: "Always responds", score: 0 },
+      { label: "Sometimes responds", score: 1 },
+      { label: "Rarely responds", score: 2 },
     ],
   },
   {
-    text: "How does your child communicate their needs?",
+    text: "How does your child interact with others?",
     options: [
-      { text: "With words or gestures", score: 0 },
-      { text: "Points or pulls you", score: 1 },
-      { text: "Doesn’t attempt to communicate", score: 3 },
+      { label: "Engages and plays easily", score: 0 },
+      { label: "Sometimes interacts", score: 1 },
+      { label: "Avoids interaction", score: 2 },
     ],
   },
   {
-    text: "Does your child maintain eye contact?",
+    text: "Does your child have repetitive behaviors (hand-flapping, rocking)?",
     options: [
-      { text: "Regularly", score: 0 },
-      { text: "Occasionally", score: 1 },
-      { text: "Avoids eye contact", score: 3 },
+      { label: "No", score: 0 },
+      { label: "Occasionally", score: 1 },
+      { label: "Frequently", score: 2 },
     ],
   },
   {
-    text: "How does your child react to new environments or people?",
+    text: "How well does your child communicate needs?",
     options: [
-      { text: "Curious and adaptive", score: 0 },
-      { text: "Shy but adjusts", score: 1 },
-      { text: "Gets very upset or avoids", score: 3 },
+      { label: "Very clearly", score: 0 },
+      { label: "Sometimes struggles", score: 1 },
+      { label: "Barely communicates", score: 2 },
     ],
   },
   {
-    text: "Repetitive behavior (e.g. flapping hands, rocking)?",
+    text: "How sensitive is your child to lights/sounds/textures?",
     options: [
-      { text: "No", score: 0 },
-      { text: "Sometimes", score: 1 },
-      { text: "Very often", score: 3 },
+      { label: "Not sensitive", score: 0 },
+      { label: "A little sensitive", score: 1 },
+      { label: "Very sensitive", score: 2 },
     ],
   },
 ];
 
-export default function ParentQuiz() {
-  const [answers, setAnswers] = useState<number[]>(Array(questions.length).fill(-1));
-  const [submitted, setSubmitted] = useState(false);
+export default function DiagnosticQuiz() {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [score, setScore] = useState(0);
+  const [finished, setFinished] = useState(false);
 
-  const handleSelect = (qIndex: number, score: number) => {
-    const newAnswers = [...answers];
-    newAnswers[qIndex] = score;
-    setAnswers(newAnswers);
-  };
+  const handleAnswer = (answerScore: number) => {
+    const newScore = score + answerScore;
 
-  const totalScore = answers.reduce((acc, val) => acc + (val >= 0 ? val : 0), 0);
-
-  const getResult = () => {
-    if (totalScore <= 10) {
-      return {
-        label: "🟢 Mild Signs",
-        message: "Your child is showing minor developmental delays. Keep observing and support them with love.",
-        color: "text-green-600",
-      };
-    } else if (totalScore <= 20) {
-      return {
-        label: "🟠 Moderate Signs",
-        message: "Your child may need guidance and support. A specialist could help with structured development.",
-        color: "text-orange-500",
-      };
+    if (currentIndex + 1 < questions.length) {
+      setScore(newScore);
+      setCurrentIndex(currentIndex + 1);
     } else {
-      return {
-        label: "🔴 Strong Signs",
-        message: "Your child shows clear signs of developmental delay. Professional help is recommended.",
-        color: "text-red-600",
-      };
+      setScore(newScore);
+      setFinished(true);
     }
   };
 
-  return (
-    <div className="max-w-3xl mx-auto p-8 text-black">
-      <h1 className="text-3xl font-bold text-center text-blue-800 mb-6">🧠 Parent Diagnostic Quiz</h1>
+  const resetQuiz = () => {
+    setScore(0);
+    setCurrentIndex(0);
+    setFinished(false);
+  };
 
-      {!submitted ? (
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (!answers.includes(-1)) setSubmitted(true);
-            else alert("Please answer all questions.");
-          }}
-          className="space-y-6"
-        >
-          {questions.map((q, i) => (
-            <div key={i} className="bg-white rounded-lg shadow p-4">
-              <p className="font-semibold mb-2">{i + 1}. {q.text}</p>
-              <div className="space-y-2">
-                {q.options.map((opt, j) => (
-                  <label key={j} className="block">
-                    <input
-                      type="radio"
-                      name={`q${i}`}
-                      className="mr-2"
-                      onChange={() => handleSelect(i, opt.score)}
-                      checked={answers[i] === opt.score}
-                    />
-                    {opt.text}
-                  </label>
-                ))}
-              </div>
+  const getResult = () => {
+    if (score <= 3) return "🟢 Mild or No Signs of Autism";
+    if (score <= 6) return "🟠 Moderate Signs – Monitor Closely";
+    return "🔴 Strong Signs – Consider Professional Assessment";
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100 p-6">
+      <div className="bg-white rounded-2xl shadow-xl p-8 max-w-xl w-full text-center">
+        {!finished ? (
+          <>
+            <h2 className="text-2xl font-bold mb-6 text-purple-800">Question {currentIndex + 1}</h2>
+            <p className="text-lg font-semibold mb-4">{questions[currentIndex].text}</p>
+            <div className="flex flex-col gap-3">
+              {questions[currentIndex].options.map((opt, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => handleAnswer(opt.score)}
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition"
+                >
+                  {opt.label}
+                </button>
+              ))}
             </div>
-          ))}
-          <button type="submit" className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-800">
-            See Result
-          </button>
-        </form>
-      ) : (
-        <div className="text-center mt-10">
-          <h2 className={`text-2xl font-bold ${getResult().color}`}>{getResult().label}</h2>
-          <p className="mt-4 text-lg text-gray-700">{getResult().message}</p>
-          <p className="mt-4 font-semibold">🧮 Total Score: {totalScore}</p>
-          <button
-            className="mt-6 bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
-            onClick={() => {
-              setAnswers(Array(questions.length).fill(-1));
-              setSubmitted(false);
-            }}
-          >
-            Retake Quiz
-          </button>
-        </div>
-      )}
+          </>
+        ) : (
+          <>
+            <h2 className="text-2xl font-bold text-green-700 mb-4">Result</h2>
+            <p className="text-xl mb-6">{getResult()}</p>
+            <button
+              onClick={resetQuiz}
+              className="bg-purple-600 hover:bg-purple-800 text-white font-semibold py-2 px-6 rounded-lg"
+            >
+              Retake Quiz
+            </button>
+          </>
+        )}
+      </div>
     </div>
   );
 }
