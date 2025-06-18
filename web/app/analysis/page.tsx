@@ -80,7 +80,7 @@ export default function DiagnosticQuiz() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100 p-6">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100 p-6 text-black">
       <div className="bg-white rounded-2xl shadow-xl p-8 max-w-xl w-full text-center">
         {!finished ? (
           <>
