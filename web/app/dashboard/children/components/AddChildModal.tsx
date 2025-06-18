@@ -27,7 +27,7 @@ export default function AddChildModal({ open, onClose, onAdded }: AddChildModalP
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <form onSubmit={handleSubmit} className="bg-white p-6 rounded w-[400px] space-y-4">
+      <form onSubmit={handleSubmit} className="bg-white p-6 rounded w-[400px] space-y-4 text-black">
         <h2 className="text-xl font-semibold">Add Child</h2>
 
         <input
