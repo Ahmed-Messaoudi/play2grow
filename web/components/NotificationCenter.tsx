@@ -17,7 +17,7 @@ export default function NotificationCenter() {
   };
 
   return (
-    <div className="p-4 bg-white rounded shadow w-80">
+    <div className="p-4 bg-white rounded shadow w-80 text-black rounded-[20px]">
       <h2 className="text-lg font-bold mb-2">Notifications</h2>
       {notifications.length === 0 && <p>No notifications</p>}
       <ul className="space-y-2">
