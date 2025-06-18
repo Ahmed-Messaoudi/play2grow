@@ -109,6 +109,14 @@ export default function DiagnosticQuiz() {
             >
               Retake Quiz ?
             </button>
+            <br />
+            <br />
+            <button
+              onClick={resetQuiz}
+              className="bg-green-500 hover:bg-blue-400 text-white font-semibold py-2 px-6 rounded-lg"
+            >
+              => Back to Home
+            </button>
           </>
         )}
       </div>
