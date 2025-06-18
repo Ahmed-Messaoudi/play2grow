@@ -106,7 +106,7 @@ export default function DiagnosticQuiz() {
               onClick={resetQuiz}
               className="bg-purple-600 hover:bg-purple-800 text-white font-semibold py-2 px-6 rounded-lg"
             >
-              Retake Quiz
+              Retake Quiz ?
             </button>
           </>
         )}
