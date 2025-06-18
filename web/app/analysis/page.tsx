@@ -80,7 +80,8 @@ export default function DiagnosticQuiz() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100 p-6 text-black">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100 p-6 text-black"
+    style={{ backgroundImage: "url('/level14.jpg')", backgroundSize: "cover" }}>
       <div className="bg-white rounded-2xl shadow-xl p-8 max-w-xl w-full text-center">
         {!finished ? (
           <>
@@ -91,7 +92,7 @@ export default function DiagnosticQuiz() {
                 <button
                   key={idx}
                   onClick={() => handleAnswer(opt.score)}
-                  className="bg-blue-500 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition"
+                  className="bg-[#a024acb0] hover:bg-green-500 text-white font-semibold py-2 px-4 rounded-lg transition"
                 >
                   {opt.label}
                 </button>
