@@ -1,6 +1,7 @@
 <#import "template.ftl" as layout>
 <@layout.registrationLayout displayInfo=true displayMessage=true; section>
   <div class="kc-login-container">
+  <img src="${url.resourcesPath}/css/logo.png" alt="Logo" class="logo" />
     <h1>Welcome to Play2Grow</h1>
     <form id="kc-form-login" action="${url.loginAction}" method="post">
       <div>
@@ -14,6 +15,7 @@
       </div>
       <#if realm.registrationAllowed?? && realm.registrationAllowed>
         <div class="create-account">
+        doesnt have an account?<br>
           <a href="${url.registrationUrl}" class="kc-registration">Create account</a>
         </div>
       </#if>
