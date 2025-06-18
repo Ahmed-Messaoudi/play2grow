@@ -5,21 +5,24 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import Image from "next/image";
 import gameroom from "@/public/gameroom.jpg"
-import numbers from "@/public/numbers.jpg"
+import numbers from "@/public/numbers.png"
 import children from "@/public/children.jpg"
 import { div } from "framer-motion/client";
 import logo from "@/public/logo.png";
 import music from "@/public/music.png";
 import settings from "@/public/settings.png";
 import play from "@/public/play.png";
+import coloring from "@/public/coloring.jpg";
+import listening from "@/public/listening.jpg";
 
 
 
 interface User {
-  name: string;
-  // add more fields if needed
+  firstName: string;
+  lastName: string;
+  email: string;
+  role?: string;
 }
-
 const Home = () => {
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
@@ -82,36 +85,41 @@ const Home = () => {
           </div>
         </section>
       ) : (
-        <section className="flex flex-col items-center bg-green-500 rounded-[50px] ">
-          <div className="flex flex-row items-center justify-between w-full p-4 bg-gray-200">
-            <a href="/profile"><h1 className=" text-2xl font-bold text-black">Welcome, {user.name}</h1></a>
+        <section className="flex flex-col items-center rounded-[50px] ">
+          <div className="flex flex-row items-center justify-between w-full p-4">
+            <a href="/profile"><div className="w-[52px] h-[52px] rounded-full bg-gray-200 flex items-center justify-center text-gray-500 text-4xl font-bold">
+        {user.firstName?.[0]?.toUpperCase() || "U"}</div><div className="flex flex-row"></div></a>
             <button
               onClick={handleAccessDashboard}
-              className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow hover:bg-blue-700 transition duration-200"
+              className="px-6 py-3 bg-[#a024acb0] text-white font-semibold rounded-lg shadow hover:bg-blue-900 transition duration-200 ml-[900px]"
             >
-              Go to Dashboard
-            </button>
-            <button onClick={handleLogout} className="px-4 py-2 bg-red-500 text-white rounded">
-              Logout
+              Parent
             </button>
           </div>
-          <div className=" flex flex-row w-auto h-[500px] bg-purple-500">
+          <div className=" flex flex-row w-auto h-[500px]  bg-[#731ab39f] rounded-[20px] overflow-x-auto">
             <div className="flex flex-col ml-[20px] mt-[30px] w-[300px] h-[400px] bg-white rounded-[20px]">
               <Image src={numbers} alt="Placeholder" className="w-full h-[200px] rounded-t-[20px]" />
-              <h6 className="text-black font-bold mt-[10px] ml-[20px]">game title</h6>
-              <button className="mt-[110px] ml-[170px] px-4 py-2 bg-blue-500 text-white rounded-[10px] w-[120px] h-[40px]">START</button>
+              <h6 className="text-black font-bold mt-[10px] ml-[20px]">🧩 Quizzes</h6>
+              <p className="text-black ml-[20px]">Answer fun questions and show how smart you are! Every quiz is a chance to discover something new!</p>
+              <button className="mt-[20px] ml-[20px] px-4 py-2 bg-[#731ab39f] text-white rounded-[10px] w-[120px] h-[40px]">START</button>
             </div>
             <div className="flex flex-col ml-[20px] mt-[30px] w-[300px] h-[400px] bg-white rounded-[20px]">
-              <Image src={numbers} alt="Placeholder" className="w-full h-[200px] rounded-t-[20px]" />
-              <button className="mt-[140px] ml-[170px] px-4 py-2 bg-blue-500 text-white rounded-[10px] w-[120px] h-[40px]">START</button>
+              <Image src={coloring} alt="Placeholder" className="w-full h-[200px] rounded-t-[20px]" />
+              <h6 className="text-black font-bold mt-[10px] ml-[20px]">🎨 Coloring</h6>
+              <p className="text-black ml-[20px]">Bring pictures to life with your favorite colors! Let your imagination paint the world!</p>
+              <button className="mt-[20px] ml-[20px] px-4 py-2 bg-[#731ab39f] text-white rounded-[10px] w-[120px] h-[40px]">START</button>
             </div>
             <div className="flex flex-col ml-[20px] mt-[30px] w-[300px] h-[400px] bg-white rounded-[20px]">
               <Image src={gameroom} alt="Placeholder" className="w-full h-[200px] rounded-t-[20px]" />
-              <button className="mt-[140px] ml-[170px] px-4 py-2 bg-blue-500 text-white rounded-[10px] w-[120px] h-[40px]">START</button>
+              <h6 className="text-black font-bold mt-[10px] ml-[20px]">🧲 Drag and Drop</h6>
+              <p className="text-black ml-[20px]">Match, move, and solve fun puzzles! Drag your way to victory while training your brain!</p>
+              <button className="mt-[20px] ml-[20px] px-4 py-2 bg-[#731ab39f] text-white rounded-[10px] w-[120px] h-[40px]">START</button>
             </div>
             <div className="flex flex-col ml-[20px] mt-[30px] w-[300px] h-[400px] bg-white rounded-[20px]">
-              <Image src={numbers} alt="Placeholder" className="w-full h-[200px] rounded-t-[20px]" />
-              <button className="mt-[140px] ml-[170px] px-4 py-2 bg-blue-500 text-white rounded-[10px] w-[120px] h-[40px]">START</button>
+              <Image src={listening} alt="Placeholder" className="w-full h-[200px] rounded-t-[20px]" />
+              <h6 className="text-black font-bold mt-[10px] ml-[20px]">🎧 Listening</h6>
+              <p className="text-black ml-[20px]">Listen carefully to exciting sounds and stories! Great adventures start with good ears!</p>
+              <button className="mt-[20px] ml-[20px] px-4 py-2 bg-[#731ab39f] text-white rounded-[10px] w-[120px] h-[40px]">START</button>
             </div>
 
           </div>
